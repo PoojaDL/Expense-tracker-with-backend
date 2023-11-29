@@ -1,12 +1,15 @@
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { Form } from "react-bootstrap";
+import axios from "axios";
 
 import classes from "./SignUp.module.css";
 
 const SignUp = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [load, setLoad] = useState(false);
+  const [users, setUsers] = useState([]);
   const emailInput = useRef();
+  const nameInput = useRef();
   const passInput = useRef();
   const confPassInput = useRef();
 
@@ -15,64 +18,64 @@ const SignUp = () => {
     setIsLogin((prevState) => !prevState);
   };
 
+  useEffect(() => {
+    axios
+      .get("http://localhost:3030/login")
+      .then((res) => {
+        setUsers(res.data);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
+  const filterUsers = (email) => {
+    return users.filter((user) => user.email === email);
+  };
+
   const formSubmitHandler = (event) => {
     event.preventDefault();
-
+    const name = nameInput.current.value;
     const email = emailInput.current.value;
     const password = passInput.current.value;
     let confPassword = "";
-    if (!isLogin) {
-      confPassword = confPassInput.current.value;
-    }
 
-    if (email && password) {
+    if (name && email && password) {
       setLoad(true);
-      //   let url;
-      //   if (isLogin) {
-      //     url =
-      //       "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyC8wHsJTe8rHFeXPPHA5u0R9NWkWsuix3s";
-      //   } else if (!isLogin && password !== confPassword) {
-      //     alert("Enter the same password");
-      //   } else {
-      //     url =
-      //       "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyC8wHsJTe8rHFeXPPHA5u0R9NWkWsuix3s";
-      //   }
+      let data = {
+        name: name,
+        email: email,
+        password: password,
+      };
 
-      //   fetch(url, {
-      //     method: "POST",
-      //     body: JSON.stringify({
-      //       email: email,
-      //       password: password,
-      //       returnSecureToken: true,
-      //     }),
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //   })
-      //     .then((res) => {
-      //       setLoad(false);
-      //       if (res.ok) {
-      //         return res.json();
-      //       } else {
-      //         return res.json().then((data) => {
-      //           let errorMessage = data.error.message;
-      //           throw new Error(errorMessage);
-      //         });
-      //       }
-      //     })
-      //     .then((data) => {
-      //       dispatch(authActions.login(data));
-      //       if (isLogin) {
-      //         history.replace("./");
-      //       } else {
-      //         alert("Account created successfully..!");
-      //         emailInput.current.value = "";
-      //         passInput.current.value = "";
-      //         setIsLogin((prevState) => !prevState);
-      //         history.replace("./");
-      //       }
-      //     })
-      //     .catch((error) => alert(error));
+      if (isLogin) {
+        const user = filterUsers(email);
+
+        if (
+          user[0].email == email &&
+          user[0].name == name &&
+          user[0].password == password
+        ) {
+          alert("He can login");
+        } else {
+          alert("User doesn't Exist");
+        }
+      }
+
+      if (!isLogin) {
+        const user = filterUsers(email);
+        if (user.length === 0) {
+          confPassword = confPassInput.current.value;
+          data = { ...data, confPassword: confPassword };
+          console.log("This is sign-in", data);
+          axios
+            .post("http://localhost:3030/login", data)
+            .then((res) => {
+              console.log(res);
+            })
+            .catch((err) => console.log(err));
+        } else {
+          alert("User already exists");
+        }
+      }
     } else {
       alert("Enter the inputs before submitting");
     }
@@ -84,6 +87,18 @@ const SignUp = () => {
         <div className={classes.auth}>
           <Form onSubmit={formSubmitHandler}>
             <h1>{isLogin ? "Login" : "Sign Up"}</h1>
+            <Form.Group
+              className="mb-3"
+              controlId="exampleForm.ControlInput0"
+              aria-required
+            >
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                ref={nameInput}
+                type="text"
+                placeholder="Your name"
+              />
+            </Form.Group>
             <Form.Group
               className="mb-3"
               controlId="exampleForm.ControlInput1"
