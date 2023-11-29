@@ -55,6 +55,8 @@ const SignUp = () => {
           user[0].password == password
         ) {
           alert("He can login");
+        } else if (user[0].email == email && user[0].password != password) {
+          alert("User not authorized");
         } else {
           alert("User doesn't Exist");
         }
