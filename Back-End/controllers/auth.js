@@ -12,7 +12,7 @@ exports.postSignUser = (req, res, next) => {
       .status(404)
       .json({ success: false, message: "Password entered are wrong" });
   }
-
+  let saltRounds = 10;
   User.findAll({ where: { email: email } })
     .then((user) => {
       if (user.length !== 0) {

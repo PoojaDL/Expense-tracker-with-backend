@@ -46,7 +46,11 @@ const SignUp = () => {
         axios
           .post("http://localhost:3030/auth", data)
           .then((res) => {
-            console.log(res);
+            if (res.status === 200) {
+              localStorage.setItem("expenseUser", email);
+            } else {
+              console.log(res);
+            }
           })
           .catch((err) => console.log(err));
       }
@@ -58,7 +62,7 @@ const SignUp = () => {
         axios
           .post("http://localhost:3030/auth/signUp", data)
           .then((res) => {
-            console.log(res.response);
+            console.log(res);
           })
           .catch((err) => console.log(err));
       }
