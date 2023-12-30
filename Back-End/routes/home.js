@@ -1,12 +1,17 @@
 const express = require("express");
 
 const homeController = require("../controllers/home");
+const middlewareAuth = require("../middleware/auth");
 const router = express.Router();
 
-router.post("/", homeController.postExpenses);
+router.get("/", middlewareAuth.authentication, homeController.getAllExpenses);
 
-router.get("/", homeController.getAllExpenses);
+router.post("/", middlewareAuth.authentication, homeController.postExpenses);
 
-router.get("/:id", homeController.deleteExpense);
+router.delete(
+  "/:id",
+  middlewareAuth.authentication,
+  homeController.deleteExpense
+);
 
 module.exports = router;

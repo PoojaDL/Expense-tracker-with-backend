@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import { Form } from "react-bootstrap";
 import axios from "axios";
 
@@ -17,15 +17,6 @@ const SignUp = () => {
     e.preventDefault();
     setIsLogin((prevState) => !prevState);
   };
-
-  // useEffect(() => {
-  //   axios
-  //     .get("http://localhost:3030/login")
-  //     .then((res) => {
-  //       setUsers(res.data);
-  //     })
-  //     .catch((err) => console.log(err));
-  // }, []);
 
   const formSubmitHandler = (event) => {
     event.preventDefault();
@@ -47,7 +38,7 @@ const SignUp = () => {
           .post("http://localhost:3030/auth", data)
           .then((res) => {
             if (res.status === 200) {
-              localStorage.setItem("expenseUser", email);
+              localStorage.setItem("expenseUser", res.data.token);
             } else {
               console.log(res);
             }

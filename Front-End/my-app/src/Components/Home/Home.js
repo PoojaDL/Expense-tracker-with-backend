@@ -3,14 +3,14 @@ import NavBar from "../Navbar/Navbar";
 import NewExpenseForm from "./NewExpenseForm";
 import axios from "axios";
 import ExpenseItem from "./ExpenseItem";
+import ActivatePremium from "./ActivatePremium";
 
 const Home = () => {
   const [expense, setExpense] = useState([]);
-  const email = localStorage.getItem("expenseUser");
-
   const fetchAllExpenses = () => {
+    const token = localStorage.getItem("expenseUser");
     axios
-      .get("http://localhost:3030/home", { params: { email: email } })
+      .get("http://localhost:3030/home", { headers: { Authorization: token } })
       .then((res) => {
         setExpense(res.data.data);
       })
@@ -25,6 +25,7 @@ const Home = () => {
     <Fragment>
       <NavBar />
       <h1>This is Home</h1>
+      <ActivatePremium />
       <NewExpenseForm fetchAgain={fetchAllExpenses} />
       {expense.length > 0 &&
         expense

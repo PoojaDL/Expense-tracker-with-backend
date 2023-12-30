@@ -20,6 +20,7 @@ const User = sequelize.define("users", {
     type: Sequilize.TEXT,
     allowNull: false,
   },
+  isPremiumuser: { type: Sequilize.BOOLEAN },
 });
 
 module.exports = User;

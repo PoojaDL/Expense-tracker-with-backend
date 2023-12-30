@@ -1,5 +1,10 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
+const generateToken = (id, name) => {
+  return jwt.sign({ userId: id, name: name }, "poojakiranapikey");
+};
 
 exports.postSignUser = (req, res, next) => {
   const name = req.body.name;
@@ -27,7 +32,6 @@ exports.postSignUser = (req, res, next) => {
             password: hash,
           })
             .then((result) => {
-              console.log(res);
               return res.status(200).json({
                 success: true,
                 message: "User Signed-In successfully",
@@ -40,15 +44,6 @@ exports.postSignUser = (req, res, next) => {
     .catch((err) => console.log(err));
 };
 
-// exports.getLoginUser = (req, res, next) => {
-//   User.findAll()
-//     .then((result) => {
-//       console.log(res);
-//       return res.json(result);
-//     })
-//     .catch((err) => console.log(err));
-// };
-
 exports.postLoginUser = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -60,6 +55,7 @@ exports.postLoginUser = (req, res, next) => {
           return res.status(200).json({
             success: true,
             message: "User Login successfully",
+            token: generateToken(user[0].id, user[0].name),
           });
         } else {
           return res.status(400).json({

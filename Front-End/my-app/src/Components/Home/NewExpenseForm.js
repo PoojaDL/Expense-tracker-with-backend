@@ -8,7 +8,7 @@ const NewExpenseForm = (props) => {
   const amountInput = useRef();
   const descInput = useRef();
   const categoryInput = useRef();
-  const email = localStorage.getItem("expenseUser");
+  const token = localStorage.getItem("expenseUser");
   // const emailofUser = email.replace(/[^a-z0-9]/gi, "");
 
   const expenseFormSubmit = (event) => {
@@ -24,7 +24,9 @@ const NewExpenseForm = (props) => {
 
     if (amountInput.current.value && descInput.current.value) {
       axios
-        .post("http://localhost:3030/home", { data: dataEntered, email: email })
+        .post("http://localhost:3030/home", dataEntered, {
+          headers: { Authorization: token },
+        })
         .then((res) => {
           console.log(res);
           props.fetchAgain();
