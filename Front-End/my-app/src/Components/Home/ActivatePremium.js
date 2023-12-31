@@ -47,21 +47,12 @@ const ActivatePremium = () => {
           );
 
           console.log(result);
-          //   alert(result);
+          if (result.status === 200) {
+            alert("Premium account activated");
+          } else {
+            alert("Payment failed");
+          }
         },
-
-        // handler: async function (response) {
-        //   await axios.post(
-        //     "http://localhost:3030/purchase/premiumMembership",
-        //     {
-        //       order_id: options.order_id,
-        //       payment_id: response.razorpay_payment_id,
-        //     },
-        //     { headers: { Authorization: token } }
-        //   );
-
-        //   alert("You are a Premium User now");
-        // },
       };
 
       const rzp1 = new window.Razorpay(options);

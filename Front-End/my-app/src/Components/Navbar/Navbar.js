@@ -1,8 +1,12 @@
 import { Fragment } from "react";
-import { Nav, Navbar, Container } from "react-bootstrap";
+import { Nav, Navbar, Container, Button } from "react-bootstrap";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 
 const NavBar = () => {
+  const logoutHandler = () => {
+    localStorage.removeItem("expenseUser");
+  };
+
   return (
     <Fragment>
       <Navbar bg="dark" data-bs-theme="dark">
@@ -14,6 +18,7 @@ const NavBar = () => {
             <Link href="#pricing">Pricing</Link> */}
           </Nav>
         </Container>
+        <Button onClick={logoutHandler}>Logout</Button>
       </Navbar>
     </Fragment>
   );

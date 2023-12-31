@@ -22,8 +22,9 @@ exports.getAllExpenses = (req, res, next) => {
     .then((result) => {
       return res.status(200).json({
         success: true,
-        message: "Added expense successfully",
+        message: "fetched expenses successfully",
         data: result,
+        isPremiumUser: req.user.isPremiumuser,
       });
     })
     .catch((err) => console.log(err));

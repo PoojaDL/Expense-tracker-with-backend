@@ -1,5 +1,6 @@
 const Razorpay = require("razorpay");
 const Order = require("../models/orders");
+const User = require("../models/user");
 
 exports.purchasePremium = (req, res, next) => {
   var rzp = new Razorpay({
@@ -20,7 +21,7 @@ exports.purchasePremium = (req, res, next) => {
       }
       Order.create({
         orderId: order.id,
-        paymentId: "Null",
+        paymentId: null,
         status: "PENDING",
         userId: req.user.id,
       })
@@ -46,12 +47,33 @@ exports.updateTransaction = (req, res, next) => {
       razorpaySignature,
     } = req.body;
 
-    res.json({
-      msg: "success",
-      orderId: razorpayOrderId,
-      paymentId: razorpayPaymentId,
-    });
+    console.log(req.body);
+
+    Order.findAll({
+      where: { userId: req.user.id, orderId: req.body.orderCreationId },
+    })
+      .then((order) => {
+        order[0].paymentId = razorpayPaymentId;
+        order[0].status = "SUCCESS";
+        return order[0].save();
+      })
+      .then(() => {
+        User.findByPk(req.user.id).then((user) => {
+          user.isPremiumuser = true;
+          return user.save();
+        });
+      })
+      .then(() => {
+        return res.json({
+          msg: "success",
+          orderId: razorpayOrderId,
+          paymentId: razorpayPaymentId,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   } catch (error) {
-    res.status(500).send(error);
+    return res.status(500).send(error);
   }
 };

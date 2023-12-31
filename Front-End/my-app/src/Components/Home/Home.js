@@ -7,12 +7,15 @@ import ActivatePremium from "./ActivatePremium";
 
 const Home = () => {
   const [expense, setExpense] = useState([]);
+  const [premiumUser, setPremium] = useState(false);
+
   const fetchAllExpenses = () => {
     const token = localStorage.getItem("expenseUser");
     axios
       .get("http://localhost:3030/home", { headers: { Authorization: token } })
       .then((res) => {
         setExpense(res.data.data);
+        setPremium(res.data.isPremiumUser);
       })
       .catch((err) => console.log(err));
   };
@@ -25,7 +28,7 @@ const Home = () => {
     <Fragment>
       <NavBar />
       <h1>This is Home</h1>
-      <ActivatePremium />
+      {!premiumUser && <ActivatePremium />}
       <NewExpenseForm fetchAgain={fetchAllExpenses} />
       {expense.length > 0 &&
         expense
