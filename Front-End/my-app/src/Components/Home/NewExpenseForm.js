@@ -20,7 +20,7 @@ const NewExpenseForm = (props) => {
       category: categoryInput.current.value,
     };
 
-    console.log(dataEntered);
+    // console.log(dataEntered);
 
     if (amountInput.current.value && descInput.current.value) {
       axios
@@ -28,7 +28,7 @@ const NewExpenseForm = (props) => {
           headers: { Authorization: token },
         })
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           props.fetchAgain();
         })
         .catch((err) => console.log(err));

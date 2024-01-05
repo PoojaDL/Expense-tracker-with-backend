@@ -4,6 +4,7 @@ import NewExpenseForm from "./NewExpenseForm";
 import axios from "axios";
 import ExpenseItem from "./ExpenseItem";
 import ActivatePremium from "./ActivatePremium";
+import LeaderBoard from "./LeaderBoard";
 
 const Home = () => {
   const [expense, setExpense] = useState([]);
@@ -28,7 +29,8 @@ const Home = () => {
     <Fragment>
       <NavBar />
       <h1>This is Home</h1>
-      {!premiumUser && <ActivatePremium />}
+      {!premiumUser ? <ActivatePremium /> : <p>You are premium user now</p>}
+      {premiumUser && <LeaderBoard />}
       <NewExpenseForm fetchAgain={fetchAllExpenses} />
       {expense.length > 0 &&
         expense

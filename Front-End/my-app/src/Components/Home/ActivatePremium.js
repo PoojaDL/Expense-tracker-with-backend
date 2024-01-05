@@ -1,5 +1,6 @@
 import { Button } from "react-bootstrap";
 import axios from "axios";
+import { Fragment } from "react";
 
 const ActivatePremium = () => {
   function loadScript(src) {
@@ -53,6 +54,10 @@ const ActivatePremium = () => {
             alert("Payment failed");
           }
         },
+
+        onPaymentError: async function (error) {
+          console.log(error);
+        },
       };
 
       const rzp1 = new window.Razorpay(options);
@@ -69,7 +74,11 @@ const ActivatePremium = () => {
     }
   };
 
-  return <Button onClick={buyPremiumHandler}>Buy Premium</Button>;
+  return (
+    <Fragment>
+      <Button onClick={buyPremiumHandler}>Buy Premium</Button>
+    </Fragment>
+  );
 };
 
 export default ActivatePremium;
