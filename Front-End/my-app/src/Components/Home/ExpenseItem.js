@@ -21,10 +21,12 @@ const ExpenseItem = (props) => {
   // };
 
   const token = localStorage.getItem("expenseUser");
+  // console.log(props);
 
   const removeItem = () => {
     axios
       .delete(`http://localhost:3030/home/${props.id}`, {
+        data: { amount: props.amount },
         headers: { Authorization: token },
       })
       .then((res) => {

@@ -20,7 +20,7 @@ const LeaderBoardItem = (props) => {
                       <td className={styles.number}>{i + 1}</td>
                       <td className={styles.name}>{item.name}</td>
                       <td className={styles.points}>
-                        {item.total_amount}
+                        {item.totalExpense}
                         <img
                           className={styles["gold-medal"]}
                           src="https://github.com/malunaridev/Challenges-iCodeThis/blob/master/4-leaderboard/assets/gold-medal.png?raw=true"
@@ -34,7 +34,7 @@ const LeaderBoardItem = (props) => {
                     <tr key={i}>
                       <td className={styles.number}>{i + 1}</td>
                       <td className={styles.name}>{item.name}</td>
-                      <td className={styles.points}>{item.total_amount}</td>
+                      <td className={styles.points}>{item.totalExpense}</td>
                     </tr>
                   );
                 }

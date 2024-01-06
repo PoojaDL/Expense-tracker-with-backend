@@ -13,10 +13,8 @@ const LeaderBoard = () => {
         headers: { Authorization: token },
       })
       .then((result) => {
-        const sortedArray = result.data.sort(
-          (a, b) => a.total_amount - b.total_amount
-        );
-        setLeaderBoard(sortedArray);
+        // console.log(result.data);
+        setLeaderBoard(result.data);
         setShow(true);
       })
       .catch((err) => console.log(err));
