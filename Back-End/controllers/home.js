@@ -1,26 +1,41 @@
 const Expense = require("../models/expense");
 const User = require("../models/user");
+const sequelize = require("../util/database");
 
-exports.postExpenses = (req, res, next) => {
-  Expense.create({
-    amount: req.body.amount,
-    description: req.body.description,
-    category: req.body.category,
-    userId: req.user.id,
-  })
+exports.postExpenses = async (req, res, next) => {
+  const t = await sequelize.transaction();
+  Expense.create(
+    {
+      amount: req.body.amount,
+      description: req.body.description,
+      category: req.body.category,
+      userId: req.user.id,
+    },
+    { transaction: t }
+  )
     .then(() => {
-      User.findByPk(req.user.id).then((user) => {
-        user.totalExpense = user.totalExpense + +req.body.amount;
-        return user.save();
-      });
+      User.findByPk(req.user.id, { transaction: t })
+        .then((user) => {
+          user.totalExpense = user.totalExpense + +req.body.amount;
+          return user.save({ transaction: t });
+        })
+        .then(async (result) => {
+          await t.commit();
+          return res.status(200).json({
+            success: true,
+            message: "Added expense successfully",
+          });
+        })
+        .catch(async (err) => {
+          await t.rollback();
+          console.log(err);
+        });
     })
-    .then((result) => {
-      return res.status(200).json({
-        success: true,
-        message: "Added expense successfully",
-      });
-    })
-    .catch((err) => console.log(err));
+
+    .catch(async (err) => {
+      await t.rollback();
+      console.log(err);
+    });
 };
 
 exports.getAllExpenses = (req, res, next) => {
