@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+var nodemailer = require("nodemailer");
 
 const generateToken = (id, name) => {
   return jwt.sign({ userId: id, name: name }, "poojakiranapikey");
@@ -69,6 +70,92 @@ exports.postLoginUser = (req, res, next) => {
         success: false,
         message: "User doesn't exist",
       });
+    }
+  });
+};
+
+exports.forgotPassword = (req, res, next) => {
+  const email = req.body.email;
+  User.findAll({ where: { email: email } }).then((user) => {
+    if (user.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "User doesn't exist",
+      });
+    }
+
+    const token = jwt.sign({ id: user[0].id }, "poojakiranapikey", {
+      expiresIn: "1d",
+    });
+
+    var transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "poojadl2002@gmail.com",
+        pass: "rdjhomndplxliblm",
+      },
+    });
+
+    var mailOptions = {
+      from: email,
+      to: "poojadl2002@gmail.com",
+      subject: `${email} your reset password have been initiated`,
+      text: `http://localhost:3000/resetpassword/${user[0].id}/${token}`,
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        return res.status(200).json({
+          success: true,
+          message: "Successfully sent to your mail",
+        });
+      }
+    });
+  });
+};
+
+exports.resetPassword = (req, res) => {
+  console.log(req.params);
+  const { id, token } = req.params;
+  const { password } = req.body;
+
+  // console.log(id, password, token);
+  jwt.verify(token, "poojakiranapikey", (err, decoded) => {
+    if (err) {
+      return res.status(404).json({
+        success: false,
+        message: "Error with token",
+      });
+    } else {
+      bcrypt
+        .hash(password, 10)
+        .then((hash) => {
+          User.findByPk(id)
+            .then((user) => {
+              user.password = hash;
+              return user.save();
+            })
+            .then(() => {
+              return res.status(200).json({
+                success: true,
+                message: "Successfully changed your password",
+              });
+            })
+            .catch((err) => {
+              return res.status(404).json({
+                success: false,
+                message: err,
+              });
+            });
+        })
+        .catch((err) => {
+          return res.status(404).json({
+            success: false,
+            message: err,
+          });
+        });
     }
   });
 };

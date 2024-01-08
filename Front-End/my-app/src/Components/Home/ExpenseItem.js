@@ -31,6 +31,7 @@ const ExpenseItem = (props) => {
       })
       .then((res) => {
         if (res.status === 200) {
+          console.log(res);
           props.fetchAgain();
         } else {
           console.log("There is problem in deleting");

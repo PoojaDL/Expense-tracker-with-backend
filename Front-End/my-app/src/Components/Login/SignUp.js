@@ -3,6 +3,7 @@ import { Form } from "react-bootstrap";
 import axios from "axios";
 
 import classes from "./SignUp.module.css";
+import { Link } from "react-router-dom/cjs/react-router-dom.min";
 
 const SignUp = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -112,9 +113,9 @@ const SignUp = () => {
                 <Form.Control ref={confPassInput} type="password" />
               </Form.Group>
             )}
-            {/* <Link to="/forgotpassword" style={{ color: "red" }}>
+            <Link to="/forgotpassword" style={{ color: "red" }}>
               forgot password?
-            </Link> */}
+            </Link>
             <div className={classes.actions}>
               {load ? (
                 <p style={{ color: "black" }}>Sending request...</p>

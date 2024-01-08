@@ -52,22 +52,36 @@ exports.getAllExpenses = (req, res, next) => {
     .catch((err) => console.log(err));
 };
 
-exports.deleteExpense = (req, res, next) => {
-  console.log(req.body.amount);
-  Expense.findAll({ where: { userId: req.user.id, id: req.params.id } })
+exports.deleteExpense = async (req, res, next) => {
+  const t = await sequelize.transaction();
+  Expense.findAll(
+    { where: { userId: req.user.id, id: req.params.id } },
+    { transaction: t }
+  )
     .then((item) => {
-      User.findByPk(req.user.id).then((user) => {
-        user.totalExpense = user.totalExpense - +req.body.amount;
-        return user.save();
-      });
-      return item[0].destroy();
+      User.findByPk(req.user.id, { transaction: t })
+        .then((user) => {
+          user.totalExpense = user.totalExpense - +req.body.amount;
+          return user.save({ transaction: t });
+        })
+        .then(() => {
+          return item[0].destroy();
+        })
+        .then(async (result) => {
+          await t.commit();
+          return res.status(200).json({
+            success: true,
+            message: "Deleted expense successfully",
+          });
+        })
+        .catch(async (err) => {
+          await t.rollback();
+          console.log(err);
+        });
     })
 
-    .then((result) => {
-      return res.status(200).json({
-        success: true,
-        message: "Deleted expense successfully",
-      });
-    })
-    .catch((err) => console.log(err));
+    .catch(async (err) => {
+      await t.rollback();
+      console.log(err);
+    });
 };
